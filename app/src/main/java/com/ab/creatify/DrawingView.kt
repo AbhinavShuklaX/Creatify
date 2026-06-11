@@ -6,16 +6,19 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
+import android.widget.ImageButton
 
 class DrawingView(context: Context, attrs: AttributeSet) : View(context,attrs){
 
     private var currentPath = Path()
     private var currentPaint = Paint()
     private var paths = mutableListOf<Pair<Path, Paint>>()
+    private var undonePaths = mutableListOf<Pair<Path, Paint>>()
 
     var brushColor: Int = Color.BLACK
     var brushSize: Float = 10f
     var brushOpacity: Int = 255
+
 
     init {
         setupPaint()
@@ -56,7 +59,13 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context,attrs){
             }
             MotionEvent.ACTION_UP -> {
                 currentPath.lineTo(x, y)
-                paths.add(Pair(currentPath, currentPaint))
+                paths.add(
+                    Pair(
+                        Path(currentPath),
+                        Paint(currentPaint)
+                    )
+                )
+                undonePaths.clear()
                 currentPath = Path()
                 performClick()
             }
@@ -69,16 +78,25 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context,attrs){
         return super.performClick()
     }
 
-    fun undo() {
-        if (paths.isNotEmpty()) {
-            paths.removeAt(paths.size - 1)
+        fun undo() {
+            if(paths.isNotEmpty()) {
+                undonePaths.add(paths.removeAt(paths.lastIndex))
+                invalidate()
+            }
+        }
+
+    fun redo() {
+        if(undonePaths.isNotEmpty()) {
+            paths.add(undonePaths.removeAt(undonePaths.lastIndex))
             invalidate()
         }
     }
 
     fun clearCanvas() {
         paths.clear()
+        undonePaths.clear()
         invalidate()
     }
+
 
 }

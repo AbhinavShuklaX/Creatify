@@ -8,8 +8,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.SeekBar
-import android.widget.Toast
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.skydoves.colorpickerview.ColorPickerDialog
+import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener
 
 class BrushBottomSheet(
     private val currentColor: Int,
@@ -76,42 +77,43 @@ class BrushBottomSheet(
             colorPalette.addView(circle)
         }
 
-        addPickerCircle(colorPalette)
+        addColorPickerCircle(colorPalette)
 
     }
 
-    private fun addPickerCircle(colorPalette: LinearLayout) {
-
-        val pickerCircle = View(requireContext())
-
+    private fun addColorPickerCircle(colorPalette: LinearLayout) {
+        val circle = View(requireContext())
         val size = 130
         val params = LinearLayout.LayoutParams(size, size)
-
         params.setMargins(8, 8, 8, 8)
+        circle.layoutParams = params
 
-        pickerCircle.layoutParams = params
+        val rainbowDrawable = GradientDrawable(
+            GradientDrawable.Orientation.TL_BR,
+            intArrayOf(Color.RED, Color.YELLOW, Color.GREEN, Color.CYAN, Color.BLUE, Color.MAGENTA)
+        )
+        rainbowDrawable.shape = GradientDrawable.OVAL
+        circle.background = rainbowDrawable
 
-        val drawable = GradientDrawable()
-
-        drawable.shape = GradientDrawable.OVAL
-
-        drawable.setColor(Color.LTGRAY)
-
-        drawable.setStroke(4, Color.DKGRAY)
-
-        pickerCircle.background = drawable
-
-        pickerCircle.setOnClickListener {
-
-            Toast.makeText(
-                requireContext(),
-                "Advanced Color Picker Coming Soon",
-                android.widget.Toast.LENGTH_SHORT
-            ).show()
-
+        circle.setOnClickListener {
+            openColorPickerDialog()
         }
 
-        colorPalette.addView(pickerCircle)
+        colorPalette.addView(circle)
+    }
+
+    private fun openColorPickerDialog() {
+        ColorPickerDialog.Builder(requireContext())
+            .setTitle("Pick a Color")
+            .attachAlphaSlideBar(true)
+            .attachBrightnessSlideBar(true)
+            .setPositiveButton("Select", ColorEnvelopeListener { envelope, _ ->
+                selectedColor = envelope.color
+                listener.onColorChanged(envelope.color)
+                refreshCircles()
+            })
+            .setNegativeButton("Cancel") { dialog, _ -> dialog.dismiss() }
+            .show()
     }
 
     private fun updateCircleDrawable(circle: View, color: Int, isSelected: Boolean) {

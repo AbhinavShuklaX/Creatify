@@ -46,6 +46,16 @@
                 android:background="@android:color/white"/>
 
             <ImageButton
+                android:id="@+id/btnRedo"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@android:color/white"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_redo"
+                android:contentDescription="Redo" />
+
+            <ImageButton
                 android:id="@+id/btnBrush"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -54,6 +64,25 @@
                 android:scaleType="centerInside"
                 android:background="@android:color/white"
                 />
+
+            <ImageButton
+                android:id="@+id/btnEraser"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:src="@drawable/ic_eraser"
+                android:scaleType="fitCenter"
+                android:background="@android:color/white"
+                />
+
+            <ImageButton
+                android:id="@+id/btnShapes"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:src="@drawable/ic_shapes"
+                android:scaleType="fitCenter"
+                android:background="@android:color/white"/>
 
             <ImageButton
                 android:id="@+id/btnClear"

@@ -9,6 +9,7 @@ pluginManagement {
         }
         mavenCentral()
         gradlePluginPortal()
+        maven("https://jitpack.io")
     }
 }
 plugins {
@@ -19,6 +20,18 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        repositories {
+            google {
+                content {
+                    includeGroupByRegex("com\\.android.*")
+                    includeGroupByRegex("com\\.google.*")
+                    includeGroupByRegex("androidx.*")
+                }
+            }
+            mavenCentral()
+            gradlePluginPortal()
+            maven("https://jitpack.io")
+        }
     }
 }
 

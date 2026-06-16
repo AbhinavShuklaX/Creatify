@@ -8,6 +8,7 @@ import android.view.View
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
 import kotlin.math.hypot
+import androidx.core.graphics.createBitmap
 
 enum class ShapeType {
     FREEHAND, LINE, RECTANGLE, CIRCLE
@@ -21,6 +22,8 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context,attrs){
     private var undonePaths = mutableListOf<Pair<Path, Paint>>()
 
     var brushColor: Int = Color.BLACK
+    var canvasBackgroundColor = Color.WHITE
+    private var backgroundBitmap: Bitmap? = null
     var brushSize: Float = 10f
     var brushOpacity: Int = 255
     var isEraserMode: Boolean = false
@@ -54,6 +57,16 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context,attrs){
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
+        if (backgroundBitmap != null) {
+            canvas.drawBitmap(
+                backgroundBitmap!!,
+                null,
+                Rect(0, 0, width, height),
+                null
+            )
+        } else {
+            canvas.drawColor(canvasBackgroundColor)
+        }
 
         val saveCount = canvas.saveLayer(null, null)
 
@@ -78,14 +91,14 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context,attrs){
                 startY = y
                 currentPath = Path()
 
-                if (currentShape == ShapeType.FREEHAND) {
+                if (isEraserMode || currentShape == ShapeType.FREEHAND) {
                     currentPath.moveTo(x, y)
                 }
 
             }
 
             MotionEvent.ACTION_MOVE -> {
-                if (currentShape == ShapeType.FREEHAND) {
+                if (isEraserMode || currentShape == ShapeType.FREEHAND) {
                     currentPath.lineTo(x, y)
                 } else {
                     updateShapePath(x, y)
@@ -93,7 +106,7 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context,attrs){
             }
 
             MotionEvent.ACTION_UP -> {
-                if (currentShape == ShapeType.FREEHAND) {
+                if (isEraserMode || currentShape == ShapeType.FREEHAND) {
                     currentPath.lineTo(x, y)
                 } else {
                     updateShapePath(x, y)
@@ -133,9 +146,7 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context,attrs){
                 val radius = hypot((endX - startX), (endY - startY))
                 currentPath.addCircle(startX, startY, radius, Path.Direction.CW)
             }
-            ShapeType.FREEHAND -> {
-                // not used here
-            }
+            ShapeType.FREEHAND -> {}
         }
     }
 
@@ -163,5 +174,21 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context,attrs){
         invalidate()
     }
 
+    fun setBackgroundImage(bitmap: Bitmap) {
+        backgroundBitmap = bitmap
+        invalidate()
+    }
 
+    fun setCanvasBackground(color: Int) {
+        backgroundBitmap = null
+        canvasBackgroundColor = color
+        invalidate()
+    }
+
+    fun getBitmap(): Bitmap {
+        val bitmap = createBitmap(width, height)
+        val canvas = Canvas(bitmap)
+        draw(canvas)
+        return bitmap
+    }
 }

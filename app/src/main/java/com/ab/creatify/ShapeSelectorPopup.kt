@@ -2,7 +2,6 @@ package com.ab.creatify
 
 import android.content.Context
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
 import android.view.Gravity
 import android.view.View
@@ -13,10 +12,12 @@ import android.widget.LinearLayout
 import android.widget.PopupWindow
 import com.skydoves.colorpickerview.ColorPickerDialog
 import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener
+import androidx.core.graphics.toColorInt
+import androidx.core.graphics.drawable.toDrawable
 
 class ShapeSelectorPopup(
     private val context: Context,
-    private val currentShape: ShapeType,
+    currentShape: ShapeType,
     private val currentColor: Int,
     private val onShapeSelected: (ShapeType, Int) -> Unit,
     private val onColorSelected: (Int) -> Unit
@@ -27,7 +28,9 @@ class ShapeSelectorPopup(
     private val shapeOptions = listOf(
         ShapeOption(ShapeType.LINE, R.drawable.ic_line),
         ShapeOption(ShapeType.RECTANGLE, R.drawable.ic_rectangle),
-        ShapeOption(ShapeType.CIRCLE, R.drawable.ic_circle)
+        ShapeOption(ShapeType.CIRCLE, R.drawable.ic_circle),
+        ShapeOption(ShapeType.TRIANGLE, R.drawable.ic_triangle),
+        ShapeOption(ShapeType.ARROW, R.drawable.ic_arrow)
     )
 
     private var selectedShape = currentShape
@@ -45,13 +48,12 @@ class ShapeSelectorPopup(
                 cornerRadius = dp(16).toFloat()
                 setColor(Color.WHITE)
             }
-            elevation = dp(8).toFloat()
         }
 
         for (option in shapeOptions) {
             val frame = FrameLayout(context).apply {
                 layoutParams = LinearLayout.LayoutParams(dp(48), dp(48)).apply {
-                    marginEnd = dp(8)
+                    marginEnd = dp(4)
                 }
             }
 
@@ -80,7 +82,7 @@ class ShapeSelectorPopup(
                 marginEnd = dp(8)
                 marginStart = dp(4)
             }
-            setBackgroundColor(Color.parseColor("#DDDDDD"))
+            setBackgroundColor("#DDDDDD".toColorInt())
         }
         container.addView(divider)
 
@@ -95,7 +97,7 @@ class ShapeSelectorPopup(
             background = GradientDrawable().apply {
                 shape = GradientDrawable.OVAL
                 setColor(currentColor)
-                setStroke(dp(1), Color.parseColor("#BBBBBB"))
+                setStroke(dp(1), "#BBBBBB".toColorInt())
             }
         }
 
@@ -113,7 +115,7 @@ class ShapeSelectorPopup(
         ).apply {
             isOutsideTouchable = true
             isFocusable = true
-            setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            setBackgroundDrawable(Color.TRANSPARENT.toDrawable())
         }
 
         container.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
@@ -125,7 +127,7 @@ class ShapeSelectorPopup(
     private fun openColorPicker() {
         ColorPickerDialog.Builder(context)
             .setTitle("Pick a Color")
-            .attachAlphaSlideBar(true)
+            .attachAlphaSlideBar(false)
             .attachBrightnessSlideBar(true)
             .setPositiveButton("Select", ColorEnvelopeListener { envelope, _ ->
                 (colorCircle.background as GradientDrawable).setColor(envelope.color)
@@ -139,7 +141,7 @@ class ShapeSelectorPopup(
         frame.background = if (isSelected) {
             GradientDrawable().apply {
                 shape = GradientDrawable.OVAL
-                setColor(Color.parseColor("#E8F0FE"))
+                setColor(context.getColor(R.color.accent))
             }
         } else {
             null

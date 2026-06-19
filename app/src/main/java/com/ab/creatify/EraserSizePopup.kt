@@ -2,7 +2,6 @@ package com.ab.creatify
 
 import android.content.Context
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
 import android.view.Gravity
 import android.view.View
@@ -10,10 +9,12 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.PopupWindow
+import androidx.core.graphics.drawable.toDrawable
+import androidx.core.graphics.toColorInt
 
 class EraserSizePopup(
     private val context: Context,
-    private val currentSize: Float,
+    currentSize: Float,
     private val onSizeSelected: (Float) -> Unit
 ) {
 
@@ -36,9 +37,10 @@ class EraserSizePopup(
             gravity = Gravity.CENTER
             setPadding(dp(12), dp(12), dp(12), dp(12))
             background = GradientDrawable().apply {
+                shape = GradientDrawable.RECTANGLE
+                cornerRadius = dp(16).toFloat()
                 setColor(Color.WHITE)
             }
-            elevation = dp(8).toFloat()
         }
 
         for (option in sizeOptions) {
@@ -54,7 +56,7 @@ class EraserSizePopup(
                 }
                 background = GradientDrawable().apply {
                     shape = GradientDrawable.OVAL
-                    setColor(Color.parseColor("#424242"))
+                    setColor("#424242".toColorInt())
                 }
             }
 
@@ -79,7 +81,7 @@ class EraserSizePopup(
         ).apply {
             isOutsideTouchable = true
             isFocusable = true
-            setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            setBackgroundDrawable(Color.TRANSPARENT.toDrawable())
         }
 
         container.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
@@ -92,8 +94,7 @@ class EraserSizePopup(
         frame.background = if (isSelected) {
             GradientDrawable().apply {
                 shape = GradientDrawable.OVAL
-                setColor(Color.parseColor("#E8F0FE"))
-            }
+                setColor(context.getColor(R.color.accent))            }
         } else {
             null
         }

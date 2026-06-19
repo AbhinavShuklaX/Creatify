@@ -2,5 +2,7 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="toolbar_bg">#FFFFFF</color>
+    <color name="toolbar_bg">#031124</color>
+    <color name="toolbar_text">#FFFFFF</color>
+    <color name="accent">#5cbcd9</color>
 </resources>

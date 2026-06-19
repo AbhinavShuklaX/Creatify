@@ -11,7 +11,8 @@
     <LinearLayout
         android:id="@+id/topToolbar"
         android:layout_width="0dp"
-        android:layout_height="56dp"
+        android:layout_height="wrap_content"
+        android:minHeight="46dp"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingStart="16dp"
@@ -21,19 +22,29 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
+        <ImageView
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginEnd="2dp"
+            android:contentDescription="@string/app_logo"
+            android:src="@drawable/creatify_logo"
+            android:scaleType="fitCenter"/>
+
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Creatify"
-            android:textSize="20sp"
+            android:text="@string/logo"
+            android:textSize="24sp"
             android:textStyle="bold"
-            android:textColor="#212121"/>
+            android:textColor="@color/accent"
+            android:includeFontPadding="false"/>
 
         <ImageButton
             android:id="@+id/btnBackground"
             android:layout_width="48dp"
             android:layout_height="48dp"
+            android:contentDescription="@string/background"
             android:src="@drawable/ic_background"
             android:scaleType="fitCenter"
             android:padding="10dp"
@@ -43,6 +54,7 @@
             android:id="@+id/btnMenu"
             android:layout_width="48dp"
             android:layout_height="48dp"
+            android:contentDescription="@string/menu"
             android:src="@drawable/ic_more"
             android:scaleType="fitCenter"
             android:padding="10dp"
@@ -64,19 +76,19 @@
         android:id="@+id/bottomToolbar"
         android:layout_width="0dp"
         android:layout_height="60dp"
-        android:layout_margin="12dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="4dp"
+        android:backgroundTint="@color/toolbar_bg"
         app:cardCornerRadius="24dp"
         app:cardElevation="8dp"
-        >
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@color/toolbar_bg"
             android:gravity="center"
-            android:background="@color/white"
             android:orientation="horizontal">
 
             <ImageButton
@@ -84,57 +96,70 @@
                 android:layout_width="0dp"
                 android:layout_height="32dp"
                 android:layout_weight="1"
-                android:src="@drawable/ic_undo"
+                android:background="@color/toolbar_bg"
+                android:contentDescription="@string/undo"
                 android:scaleType="fitCenter"
-                android:background="@android:color/white"/>
+                android:src="@drawable/ic_undo" />
 
             <ImageButton
                 android:id="@+id/btnRedo"
                 android:layout_width="0dp"
                 android:layout_height="32dp"
                 android:layout_weight="1"
-                android:background="@android:color/white"
+                android:background="@color/toolbar_bg"
+                android:contentDescription="@string/redo"
                 android:scaleType="centerInside"
-                android:src="@drawable/ic_redo"
-                android:contentDescription="Redo" />
+                android:src="@drawable/ic_redo" />
 
             <ImageButton
                 android:id="@+id/btnBrush"
                 android:layout_width="0dp"
                 android:layout_height="32dp"
                 android:layout_weight="1"
-                android:src="@drawable/ic_brush"
+                android:background="@color/toolbar_bg"
+                android:contentDescription="@string/brush"
                 android:scaleType="centerInside"
-                android:background="@android:color/white"
-                />
+                android:src="@drawable/ic_brush" />
 
             <ImageButton
                 android:id="@+id/btnEraser"
                 android:layout_width="0dp"
                 android:layout_height="32dp"
                 android:layout_weight="1"
-                android:src="@drawable/ic_eraser"
+                android:background="@color/toolbar_bg"
+                android:contentDescription="@string/eraser"
                 android:scaleType="fitCenter"
-                android:background="@android:color/white"
-                />
+                android:src="@drawable/ic_eraser" />
 
             <ImageButton
                 android:id="@+id/btnShapes"
                 android:layout_width="0dp"
                 android:layout_height="32dp"
                 android:layout_weight="1"
-                android:src="@drawable/ic_shapes"
+                android:background="@color/toolbar_bg"
+                android:contentDescription="@string/shapes"
                 android:scaleType="fitCenter"
-                android:background="@android:color/white"/>
+                android:src="@drawable/ic_shapes" />
+
+            <ImageButton
+                android:id="@+id/btnFill"
+                android:layout_width="0dp"
+                android:layout_height="32dp"
+                android:layout_weight="1"
+                android:background="@color/toolbar_bg"
+                android:contentDescription="@string/fill"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_fill" />
 
             <ImageButton
                 android:id="@+id/btnClear"
                 android:layout_width="0dp"
                 android:layout_height="32dp"
                 android:layout_weight="1"
-                android:src="@drawable/ic_clear"
+                android:background="@color/toolbar_bg"
                 android:scaleType="fitCenter"
-                android:background="@android:color/white"/>
+                android:contentDescription="@string/clear"
+                android:src="@drawable/ic_clear" />
 
         </LinearLayout>
 

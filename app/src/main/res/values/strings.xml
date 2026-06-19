@@ -1,3 +1,23 @@
 <resources>
     <string name="app_name">Creatify</string>
+    <string name="app_logo">App Logo</string>
+    <string name="logo">reatify</string>
+    <string name="background">Change Canvas BackGround</string>
+    <string name="menu">Menu</string>
+    <string name="undo">Undo</string>
+    <string name="redo">Redo</string>
+    <string name="brush">Brush</string>
+    <string name="eraser">Eraser</string>
+    <string name="shapes">Shapes</string>
+    <string name="fill">Fill</string>
+    <string name="clear">Clear</string>
+    <string name="brush_settings">Brush Settings</string>
+    <string name="color">Color</string>
+    <string name="brush_size">Brush Size</string>
+    <string name="opacity">Opacity</string>
+    <string name="canvas_background">Canvas Background</string>
+    <string name="custom_color">Custom Color</string>
+    <string name="choose_from_gallery">Choose from Gallery</string>
+    <string name="share_image">Share Image</string>
+    <string name="save_image">Save Image</string>
 </resources>

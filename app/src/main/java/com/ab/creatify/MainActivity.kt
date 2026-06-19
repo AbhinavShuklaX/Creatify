@@ -1,14 +1,16 @@
 package com.ab.creatify
 
+import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.Color
 import android.graphics.ImageDecoder
 import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.view.MotionEvent
+import android.view.View
 import android.widget.ImageButton
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -18,27 +20,38 @@ import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var drawingView: DrawingView
     private lateinit var toolButtons: List<ImageButton>
 
+    @SuppressLint("DiscouragedPrivateApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        window.statusBarColor =
-            getColor(R.color.toolbar_bg)
-        WindowInsetsControllerCompat(
-            window,
-            window.decorView
-        ).isAppearanceLightStatusBars = true
+        window.statusBarColor = getColor(R.color.toolbar_bg)
+        WindowInsetsControllerCompat(window, window.decorView)
+            .isAppearanceLightStatusBars = false
         setContentView(R.layout.activity_main)
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            v.setPadding(0, 0, 0, systemBars.bottom)
             insets
         }
+
+        val topToolbar = findViewById<View>(R.id.topToolbar)
+        ViewCompat.setOnApplyWindowInsetsListener(topToolbar) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(v.paddingLeft, systemBars.top, v.paddingRight, v.paddingBottom)
+            insets
+        }
+
         drawingView =  findViewById(R.id.drawingView)
 
         val btnUndo = findViewById< ImageButton>(R.id.btnUndo)
@@ -47,8 +60,11 @@ class MainActivity : AppCompatActivity() {
         val btnRedo = findViewById<ImageButton>(R.id.btnRedo)
         val btnEraser = findViewById<ImageButton>(R.id.btnEraser)
         val btnShapes = findViewById<ImageButton>(R.id.btnShapes)
+        val btnFill = findViewById<ImageButton>(R.id.btnFill)
+        val btnMenu = findViewById<ImageButton>(R.id.btnMenu)
+        val btnBackground = findViewById<ImageButton>(R.id.btnBackground)
 
-        toolButtons = listOf(btnBrush, btnEraser, btnShapes)
+        toolButtons = listOf(btnBrush, btnEraser, btnShapes, btnFill)
 
         btnUndo.setOnClickListener {
             drawingView.undo()
@@ -64,6 +80,7 @@ class MainActivity : AppCompatActivity() {
 
         btnEraser.setOnClickListener {
             drawingView.isEraserMode = true
+            drawingView.isFillMode = false
             drawingView.currentShape = ShapeType.FREEHAND
             setActiveTool(btnEraser)
 
@@ -74,13 +91,15 @@ class MainActivity : AppCompatActivity() {
 
         btnShapes.setOnClickListener {
             drawingView.isEraserMode = false
+
             ShapeSelectorPopup(
                 context = this,
                 currentShape = drawingView.currentShape,
                 currentColor = drawingView.brushColor,
-                onShapeSelected = { shapeType, iconRes ->
+                onShapeSelected = { shapeType, _ ->
+                    drawingView.isFillMode = false
+                    drawingView.isEraserMode = false
                     drawingView.currentShape = shapeType
-                    btnShapes.setImageResource(iconRes)
                     setActiveTool(btnShapes)
                 },
                 onColorSelected = { color ->
@@ -89,8 +108,16 @@ class MainActivity : AppCompatActivity() {
             ).show(btnShapes)
         }
 
+        btnFill.setOnClickListener {
+            drawingView.isEraserMode = false
+            drawingView.isFillMode = true
+            drawingView.currentShape = ShapeType.FREEHAND
+            setActiveTool(btnFill)
+        }
+
         btnBrush.setOnClickListener {
             drawingView.isEraserMode = false
+            drawingView.isFillMode = false
             drawingView.currentShape = ShapeType.FREEHAND
             setActiveTool(btnBrush)
             val brushSheet = BrushBottomSheet(
@@ -113,31 +140,62 @@ class MainActivity : AppCompatActivity() {
         }
         setActiveTool(btnBrush)
 
-        val btnMenu = findViewById<ImageButton>(R.id.btnMenu)
-        val btnBackground = findViewById<ImageButton>(R.id.btnBackground)
+
+        listOf(
+            btnUndo, btnRedo, btnBrush, btnEraser,
+            btnShapes, btnClear, btnFill,
+            btnBackground, btnMenu
+        ).forEach { addPressAnimation(it) }
 
         btnMenu.setOnClickListener {
+
             val popup = PopupMenu(this, btnMenu)
-            popup.menuInflater.inflate(R.menu.top_menu, popup.menu)
+
+            popup.menuInflater.inflate(
+                R.menu.top_menu,
+                popup.menu
+            )
+
+            try {
+                val field = popup.javaClass.getDeclaredField("mPopup")
+                field.isAccessible = true
+
+                val menuPopupHelper = field.get(popup)
+
+                menuPopupHelper.javaClass
+                    .getDeclaredMethod(
+                        "setForceShowIcon",
+                        Boolean::class.java
+                    )
+                    .invoke(menuPopupHelper, true)
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+
             popup.setOnMenuItemClickListener { item ->
                 when (item.itemId) {
                     R.id.action_save -> {
                         saveDrawing()
                         true
                     }
+
                     R.id.action_share -> {
                         shareDrawing()
                         true
                     }
+
                     else -> false
                 }
             }
+
             popup.show()
         }
 
         btnBackground.setOnClickListener {
             BackgroundColorPopup(
                 context = this,
+                currentColor = drawingView.canvasBackgroundColor,
                 onColorSelected = { color ->
                     drawingView.setCanvasBackground(color)
                 },
@@ -149,12 +207,12 @@ class MainActivity : AppCompatActivity() {
     }
     private fun setActiveTool(activeBtn: ImageButton) {
         toolButtons.forEach { btn ->
-            btn.setBackgroundColor(Color.WHITE)
+            btn.setBackgroundColor(getColor(R.color.toolbar_bg))
         }
         val drawable = GradientDrawable().apply {
             shape = GradientDrawable.OVAL
             cornerRadius = 16f
-            setColor(Color.parseColor("#5cbcd9"))
+            setColor(getColor(R.color.accent))
         }
         activeBtn.background = drawable
     }
@@ -184,57 +242,70 @@ class MainActivity : AppCompatActivity() {
         }
 
     private fun saveDrawing() {
-        val bitmap = drawingView.getBitmap()
-        val filename =
-            "Creatify_${System.currentTimeMillis()}.png"
-        try {
-            val fos = if (
-                android.os.Build.VERSION.SDK_INT >=
-                android.os.Build.VERSION_CODES.Q
-            ) {
-                val values = android.content.ContentValues().apply {
-                    put(
-                        android.provider.MediaStore.Images.Media.DISPLAY_NAME,
-                        filename
-                    )
-                    put(
-                        android.provider.MediaStore.Images.Media.MIME_TYPE,
-                        "image/png"
-                    )
-                    put(
-                        android.provider.MediaStore.Images.Media.RELATIVE_PATH,
-                        "Pictures/Creatify"
-                    )
+
+        lifecycleScope.launch {
+            try {
+                val bitmap = withContext(Dispatchers.Default) {
+                    drawingView.getBitmap()
                 }
 
-                val uri =
-                    contentResolver.insert(
-                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                        values
-                    )
-                contentResolver.openOutputStream(uri!!)
-            } else {
-                null
+                withContext(Dispatchers.IO) {
+
+                    val filename =
+                        "Creatify_${System.currentTimeMillis()}.png"
+
+                    val fos =
+                        if (android.os.Build.VERSION.SDK_INT >=
+                            android.os.Build.VERSION_CODES.Q
+                        ) {
+                            val values = ContentValues().apply {
+                                put(
+                                    MediaStore.Images.Media.DISPLAY_NAME,
+                                    filename
+                                )
+                                put(
+                                    MediaStore.Images.Media.MIME_TYPE,
+                                    "image/png"
+                                )
+                                put(
+                                    MediaStore.Images.Media.RELATIVE_PATH,
+                                    "Pictures/Creatify"
+                                )
+                            }
+
+                            val uri =
+                                contentResolver.insert(
+                                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                                    values
+                                )
+
+                            contentResolver.openOutputStream(uri!!)
+                        } else {
+                            null
+                        }
+
+                    fos?.use {
+                        bitmap.compress(
+                            Bitmap.CompressFormat.PNG,
+                            100,
+                            it
+                        )
+                    }
+                }
+
+                Toast.makeText(
+                    this@MainActivity,
+                    "Drawing Saved",
+                    Toast.LENGTH_SHORT
+                ).show()
+            } catch (e: Exception) {
+                Toast.makeText(
+                    this@MainActivity,
+                    "Failed to Save",
+                    Toast.LENGTH_SHORT
+                ).show()
+                e.printStackTrace()
             }
-            fos?.use {
-                bitmap.compress(
-                    Bitmap.CompressFormat.PNG,
-                    100,
-                    it
-                )
-            }
-            Toast.makeText(
-                this,
-                "Drawing Saved",
-                Toast.LENGTH_SHORT
-            ).show()
-        } catch (e: Exception) {
-            Toast.makeText(
-                this,
-                "Failed to Save",
-                Toast.LENGTH_SHORT
-            ).show()
-            e.printStackTrace()
         }
     }
 
@@ -298,6 +369,20 @@ class MainActivity : AppCompatActivity() {
             }
         }
         return uri
+    }
+    @SuppressLint("ClickableViewAccessibility")
+    private fun addPressAnimation(view: View) {
+        view.setOnTouchListener { v, event ->
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    v.animate().scaleX(0.65f).scaleY(0.65f).setDuration(30).start()
+                }
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                    v.animate().scaleX(1f).scaleY(1f).setDuration(150).start()
+                }
+            }
+            false
+        }
     }
 
 }

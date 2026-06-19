@@ -13,7 +13,7 @@ import com.skydoves.colorpickerview.ColorPickerDialog
 import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener
 
 class BrushBottomSheet(
-    private val currentColor: Int,
+    currentColor: Int,
     private val currentSize: Float,
     private val currentOpacity: Int,
     private val listener: BrushSettingsListener
@@ -105,7 +105,7 @@ class BrushBottomSheet(
     private fun openColorPickerDialog() {
         ColorPickerDialog.Builder(requireContext())
             .setTitle("Pick a Color")
-            .attachAlphaSlideBar(true)
+            .attachAlphaSlideBar(false)
             .attachBrightnessSlideBar(true)
             .setPositiveButton("Select", ColorEnvelopeListener { envelope, _ ->
                 selectedColor = envelope.color
@@ -121,7 +121,7 @@ class BrushBottomSheet(
         drawable.shape = GradientDrawable.OVAL
         drawable.setColor(color)
         if (isSelected) {
-            drawable.setStroke(6, Color.GRAY)
+            drawable.setStroke(10, Color.BLACK)
         }
         circle.background = drawable
     }

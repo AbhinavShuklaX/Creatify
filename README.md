@@ -28,21 +28,28 @@ A feature-rich Android drawing application built using Kotlin and Android Canvas
 - Material Components
 
 ## Screenshots
-1.Home Screen
-<img width="1240" height="2772" alt="HomeScreen" src="https://github.com/user-attachments/assets/a2d4922f-12a7-4913-a66c-172a33df750a" />
+## Screenshots
 
-2.Brush Setting
-<img width="1240" height="2772" alt="BrushSetting" src="https://github.com/user-attachments/assets/10e2f899-29ec-4bb0-8469-27338040d9ca" />
+### Home Screen & Brush Settings
 
-3.Background Selector Popup
-<img width="1240" height="2772" alt="BackgroundSelectorPopup" src="https://github.com/user-attachments/assets/5d08fdde-8467-4216-b183-751b4a74c79b" />
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/a2d4922f-12a7-4913-a66c-172a33df750a" width="220"/>
+  <img src="https://github.com/user-attachments/assets/10e2f899-29ec-4bb0-8469-27338040d9ca" width="220"/>
+</p>
 
-4.Top Menu
-<img width="1240" height="2772" alt="Save Share" src="https://github.com/user-attachments/assets/79daa95e-f4e4-42ee-b0ba-08e39240a87c" />
+### Background Selector & Top Menu
 
-5.Fill Tool
-<img width="1240" height="2772" alt="beforeFill" src="https://github.com/user-attachments/assets/3fa9a250-d448-4daa-9659-a0f470f58ebf" />
-<img width="1240" height="2772" alt="afterFill" src="https://github.com/user-attachments/assets/d59c2929-69f9-433b-b008-5f636011b198" />
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/5d08fdde-8467-4216-b183-751b4a74c79b" width="220"/>
+  <img src="https://github.com/user-attachments/assets/79daa95e-f4e4-42ee-b0ba-08e39240a87c" width="220"/>
+</p>
+
+### Fill Tool
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/3fa9a250-d448-4daa-9659-a0f470f58ebf" width="220"/>
+  <img src="https://github.com/user-attachments/assets/d59c2929-69f9-433b-b008-5f636011b198" width="220"/>
+</p>
 
 ## Future Improvements
 - Text Tool
